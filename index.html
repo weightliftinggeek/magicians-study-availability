@@ -204,12 +204,12 @@ function venueNowKey(){
    21+      -> green  (seats available)
    null     -> grey   (no data; must not imply either sold out or available) */
 function statusOf(p){
-  if(p.state === "sold_out") return {cls:"sold", label:"Sold out"};
+  if(p.state === "sold_out") return {cls:"sold", label:""};
   const open = p.open;
-  if(open === null || open === undefined) return {cls:"unknown", label:"—"}; // no data → neutral, never red, never green
-  if(open === 0)  return {cls:"sold",    label:"Sold out"};
-  if(open < 21)   return {cls:"limited", label:open + " left"};
-  return            {cls:"open",         label:open + " left"};
+  if(open === null || open === undefined) return {cls:"unknown", label:""};
+  if(open === 0)  return {cls:"sold",    label:""};
+  if(open < 21)   return {cls:"limited", label:""};
+  return            {cls:"open",         label:""};
 }
 const COLOUR = {open:"var(--open)", limited:"var(--limited)", sold:"var(--sold)", unknown:"var(--unknown)"};
 
