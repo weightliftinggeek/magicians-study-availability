@@ -1,0 +1,52 @@
+name: Update availability
+
+on:
+  schedule:
+    - cron: "*/360 * * * *"     # every 360 minutes (UTC)
+  workflow_dispatch:            # lets you run it by hand from the Actions tab
+
+# Only one run at a time; don't queue overlaps
+concurrency:
+  group: availability
+  cancel-in-progress: false
+
+permissions:
+  contents: write               # needed to commit availability.json back
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - run: pip install requests
+
+      - name: Scrape availability
+        run: python scrape_availability.py
+
+      - name: Commit feed if it changed
+        run: |
+          git config user.name  "availability-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add availability.json pkg_cache.json
+          if git diff --cached --quiet; then
+            echo "No change."
+          else
+            git commit -m "availability: $(date -u +%Y-%m-%dT%H:%MZ)"
+            git push
+          fi
+
+  # ---- Weekly heartbeat: proves the schedule is alive ----
+  # If this email stops arriving on Mondays, the whole thing has silently died.
+  heartbeat:
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    needs: scrape
+    steps:
+      - run: echo "Availability job ran at $(date -u). Feed is being updated."
+      # Replace the echo above with an email/Telegram step once you pick a
+      # channel — ask Claude for the exact snippet for whichever you choose.
