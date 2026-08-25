@@ -2,7 +2,7 @@ name: Update availability
 
 on:
   schedule:
-    - cron: "*/360 * * * *"     # every 360 minutes (UTC)
+    - cron: "0 */12 * * *"    # every 12 hours (UTC)
   workflow_dispatch:            # lets you run it by hand from the Actions tab
 
 # Only one run at a time; don't queue overlaps
