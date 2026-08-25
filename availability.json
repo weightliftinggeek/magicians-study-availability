@@ -1,0 +1,439 @@
+{
+  "updated_at": "2026-08-24T23:27:24.908867-07:00",
+  "venue_timezone": "America/Los_Angeles",
+  "capacity": 65,
+  "performances": [
+    {
+      "date": "2026-08-27",
+      "time": "19:00",
+      "open": 41,
+      "state": "on_sale"
+    },
+    {
+      "date": "2026-08-27",
+      "time": "21:30",
+      "open": 11,
+      "state": "on_sale"
+    },
+    {
+      "date": "2026-08-28",
+      "time": "19:00",
+      "open": 3,
+      "state": "on_sale"
+    },
+    {
+      "date": "2026-08-28",
+      "time": "21:30",
+      "open": 0,
+      "state": "sold_out"
+    },
+    {
+      "date": "2026-08-30",
+      "time": "19:00",
+      "open": 3,
+      "state": "on_sale"
+    },
+    {
+      "date": "2026-08-30",
+      "time": "21:30",
+      "open": 20,
+      "state": "on_sale"
+    },
+    {
+      "date": "2026-09-03",
+      "time": "19:00",
+      "open": 31,
+      "state": "on_sale"
+    },
+    {
+      "date": "2026-09-03",
+      "time": "21:30",
+      "open": 22,
+      "state": "on_sale"
+    },
+    {
+      "date": "2026-09-04",
+      "time": "19:00",
+      "open": 26,
+      "state": "on_sale"
+    },
+    {
+      "date": "2026-09-04",
+      "time": "21:30",
+      "open": 21,
+      "state": "on_sale"
+    },
+    {
+      "date": "2026-09-05",
+      "time": "19:00",
+      "open": 35,
+      "state": "on_sale"
+    },
+    {
+      "date": "2026-09-05",
+      "time": "21:30",
+      "open": 30,
+      "state": "on_sale"
+    },
+    {
+      "date": "2026-09-06",
+      "time": "19:00",
+      "open": 8,
+      "state": "on_sale"
+    },
+    {
+      "date": "2026-09-06",
+      "time": "21:30",
+      "open": 35,
+      "state": "on_sale"
+    },
+    {
+      "date": "2026-09-10",
+      "time": "19:00",
+      "open": 17,
+      "state": "on_sale"
+    },
+    {
+      "date": "2026-09-10",
+      "time": "21:30",
+      "open": 34,
+      "state": "on_sale"
+    },
+    {
+      "date": "2026-09-11",
+      "time": "19:00",
+      "open": 21,
+      "state": "on_sale"
+    },
+    {
+      "date": "2026-09-11",
+      "time": "21:30",
+      "open": 34,
+      "state": "on_sale"
+    },
+    {
+      "date": "2026-09-12",
+      "time": "19:00",
+      "open": 37,
+      "state": "on_sale"
+    },
+    {
+      "date": "2026-09-12",
+      "time": "21:30",
+      "open": 21,
+      "state": "on_sale"
+    },
+    {
+      "date": "2026-09-13",
+      "time": "19:00",
+      "open": 39,
+      "state": "on_sale"
+    },
+    {
+      "date": "2026-09-13",
+      "time": "21:30",
+      "open": 47,
+      "state": "on_sale"
+    },
+    {
+      "date": "2026-09-17",
+      "time": "19:00",
+      "open": 23,
+      "state": "on_sale"
+    },
+    {
+      "date": "2026-09-17",
+      "time": "21:30",
+      "open": 29,
+      "state": "on_sale"
+    },
+    {
+      "date": "2026-09-19",
+      "time": "19:00",
+      "open": 30,
+      "state": "on_sale"
+    },
+    {
+      "date": "2026-09-19",
+      "time": "21:30",
+      "open": 30,
+      "state": "on_sale"
+    },
+    {
+      "date": "2026-09-20",
+      "time": "19:00",
+      "open": 40,
+      "state": "on_sale"
+    },
+    {
+      "date": "2026-09-20",
+      "time": "21:30",
+      "open": 40,
+      "state": "on_sale"
+    },
+    {
+      "date": "2026-10-01",
+      "time": "19:00",
+      "open": 58,
+      "state": "on_sale"
+    },
+    {
+      "date": "2026-10-01",
+      "time": "21:30",
+      "open": 58,
+      "state": "on_sale"
+    },
+    {
+      "date": "2026-10-02",
+      "time": "19:00",
+      "open": 37,
+      "state": "on_sale"
+    },
+    {
+      "date": "2026-10-02",
+      "time": "21:30",
+      "open": 34,
+      "state": "on_sale"
+    },
+    {
+      "date": "2026-10-03",
+      "time": "19:00",
+      "open": 52,
+      "state": "on_sale"
+    },
+    {
+      "date": "2026-10-03",
+      "time": "21:30",
+      "open": 44,
+      "state": "on_sale"
+    },
+    {
+      "date": "2026-10-04",
+      "time": "19:00",
+      "open": 50,
+      "state": "on_sale"
+    },
+    {
+      "date": "2026-10-04",
+      "time": "21:30",
+      "open": 49,
+      "state": "on_sale"
+    },
+    {
+      "date": "2026-10-08",
+      "time": "19:00",
+      "open": 45,
+      "state": "on_sale"
+    },
+    {
+      "date": "2026-10-08",
+      "time": "21:30",
+      "open": 58,
+      "state": "on_sale"
+    },
+    {
+      "date": "2026-10-09",
+      "time": "19:00",
+      "open": 50,
+      "state": "on_sale"
+    },
+    {
+      "date": "2026-10-09",
+      "time": "21:30",
+      "open": 35,
+      "state": "on_sale"
+    },
+    {
+      "date": "2026-10-10",
+      "time": "19:00",
+      "open": 42,
+      "state": "on_sale"
+    },
+    {
+      "date": "2026-10-10",
+      "time": "21:30",
+      "open": 42,
+      "state": "on_sale"
+    },
+    {
+      "date": "2026-10-11",
+      "time": "19:00",
+      "open": 48,
+      "state": "on_sale"
+    },
+    {
+      "date": "2026-10-11",
+      "time": "21:30",
+      "open": 50,
+      "state": "on_sale"
+    },
+    {
+      "date": "2026-10-15",
+      "time": "19:00",
+      "open": 49,
+      "state": "on_sale"
+    },
+    {
+      "date": "2026-10-15",
+      "time": "21:30",
+      "open": 51,
+      "state": "on_sale"
+    },
+    {
+      "date": "2026-10-16",
+      "time": "19:00",
+      "open": 47,
+      "state": "on_sale"
+    },
+    {
+      "date": "2026-10-16",
+      "time": "21:30",
+      "open": 46,
+      "state": "on_sale"
+    },
+    {
+      "date": "2026-10-17",
+      "time": "19:00",
+      "open": 41,
+      "state": "on_sale"
+    },
+    {
+      "date": "2026-10-17",
+      "time": "21:30",
+      "open": 27,
+      "state": "on_sale"
+    },
+    {
+      "date": "2026-10-22",
+      "time": "19:00",
+      "open": 39,
+      "state": "on_sale"
+    },
+    {
+      "date": "2026-10-22",
+      "time": "21:30",
+      "open": 56,
+      "state": "on_sale"
+    },
+    {
+      "date": "2026-10-23",
+      "time": "19:00",
+      "open": 42,
+      "state": "on_sale"
+    },
+    {
+      "date": "2026-10-23",
+      "time": "21:30",
+      "open": 44,
+      "state": "on_sale"
+    },
+    {
+      "date": "2026-10-24",
+      "time": "19:00",
+      "open": 56,
+      "state": "on_sale"
+    },
+    {
+      "date": "2026-10-24",
+      "time": "21:30",
+      "open": 54,
+      "state": "on_sale"
+    },
+    {
+      "date": "2026-10-25",
+      "time": "19:00",
+      "open": 51,
+      "state": "on_sale"
+    },
+    {
+      "date": "2026-10-25",
+      "time": "21:30",
+      "open": 55,
+      "state": "on_sale"
+    },
+    {
+      "date": "2026-10-29",
+      "time": "19:00",
+      "open": 50,
+      "state": "on_sale"
+    },
+    {
+      "date": "2026-10-29",
+      "time": "21:30",
+      "open": 40,
+      "state": "on_sale"
+    },
+    {
+      "date": "2026-10-30",
+      "time": "19:00",
+      "open": 44,
+      "state": "on_sale"
+    },
+    {
+      "date": "2026-10-30",
+      "time": "21:30",
+      "open": 49,
+      "state": "on_sale"
+    },
+    {
+      "date": "2026-10-31",
+      "time": "19:00",
+      "open": 53,
+      "state": "on_sale"
+    },
+    {
+      "date": "2026-10-31",
+      "time": "21:30",
+      "open": 52,
+      "state": "on_sale"
+    },
+    {
+      "date": "2026-11-01",
+      "time": "19:00",
+      "open": 54,
+      "state": "on_sale"
+    },
+    {
+      "date": "2026-11-01",
+      "time": "21:30",
+      "open": 54,
+      "state": "on_sale"
+    },
+    {
+      "date": "2026-11-05",
+      "time": "19:00",
+      "open": 46,
+      "state": "on_sale"
+    },
+    {
+      "date": "2026-11-05",
+      "time": "21:30",
+      "open": 47,
+      "state": "on_sale"
+    },
+    {
+      "date": "2026-11-06",
+      "time": "19:00",
+      "open": 58,
+      "state": "on_sale"
+    },
+    {
+      "date": "2026-11-06",
+      "time": "21:30",
+      "open": 46,
+      "state": "on_sale"
+    },
+    {
+      "date": "2026-11-07",
+      "time": "19:00",
+      "open": 49,
+      "state": "on_sale"
+    },
+    {
+      "date": "2026-11-07",
+      "time": "21:30",
+      "open": 53,
+      "state": "on_sale"
+    }
+  ]
+}

@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Magician's Study — Availability</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,500;1,300&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0A0908;
+    --ink-raised:#141210;
+    --rule:#2A2521;
+    --bone:#E6DDCB;
+    --bone-dim:#8A8073;
+    --brass:#C9A227;
+
+    --open:#4E8A5C;        /* 21+ seats  */
+    --limited:#C98A2B;     /* 1-20 seats */
+    --sold:#9B3226;        /* 0 seats    */
+    --unknown:#5A544C;     /* no data — never implies availability */
+
+    --cell-min:104px;
+  }
+
+  *{box-sizing:border-box;}
+
+  body{
+    margin:0;
+    background:var(--ink);
+    color:var(--bone);
+    font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+    -webkit-font-smoothing:antialiased;
+    padding:clamp(16px,4vw,48px);
+  }
+
+  .wrap{max-width:1040px;margin:0 auto;}
+
+  /* ---- masthead ---- */
+  header.mast{
+    text-align:center;
+    border-bottom:1px solid var(--rule);
+    padding-bottom:22px;
+    margin-bottom:26px;
+  }
+  .eyebrow{
+    font-size:10px;letter-spacing:.32em;text-transform:uppercase;
+    color:var(--brass);margin:0 0 14px;
+  }
+  .monthbar{
+    display:flex;align-items:center;justify-content:center;gap:clamp(16px,5vw,40px);
+  }
+  .monthbar h1{
+    font-family:"Cormorant Garamond",Georgia,serif;
+    font-weight:300;font-style:italic;
+    font-size:clamp(30px,7vw,52px);
+    letter-spacing:.02em;
+    margin:0;min-width:8ch;
+  }
+  .monthbar h1 span{font-style:normal;font-size:.5em;letter-spacing:.18em;color:var(--bone-dim);display:block;margin-top:2px;}
+  .nav{
+    background:none;border:1px solid var(--rule);color:var(--bone);
+    width:38px;height:38px;border-radius:50%;cursor:pointer;
+    font-size:14px;line-height:1;transition:border-color .18s,color .18s;
+  }
+  .nav:hover:not(:disabled){border-color:var(--brass);color:var(--brass);}
+  .nav:disabled{opacity:.2;cursor:not-allowed;}
+  .nav:focus-visible{outline:2px solid var(--brass);outline-offset:2px;}
+
+  /* ---- legend ---- */
+  .legend{
+    display:flex;flex-wrap:wrap;justify-content:center;gap:18px;
+    font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--bone-dim);margin-top:18px;
+  }
+  .legend b{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:7px;vertical-align:1px;}
+
+  /* ---- grid ---- */
+  .dow{
+    display:grid;grid-template-columns:repeat(7,1fr);
+    font-size:10px;letter-spacing:.2em;text-transform:uppercase;
+    color:var(--bone-dim);text-align:center;padding-bottom:10px;
+  }
+  .grid{
+    display:grid;grid-template-columns:repeat(7,1fr);
+    border-top:1px solid var(--rule);border-left:1px solid var(--rule);
+  }
+  .cell{
+    border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);
+    min-height:var(--cell-min);padding:8px 7px 10px;
+    display:flex;flex-direction:column;gap:5px;
+  }
+  .cell.spill{background:#080707;}
+  .cell.past{opacity:.28;}
+  .daynum{
+    font-family:"Cormorant Garamond",Georgia,serif;
+    font-size:19px;line-height:1;color:var(--bone);
+  }
+  .cell.spill .daynum{color:var(--bone-dim);}
+  .cell.today .daynum{
+    color:var(--brass);
+    border-bottom:1px solid var(--brass);
+    display:inline-block;align-self:flex-start;padding-bottom:2px;
+  }
+  .dark{
+    font-size:9px;letter-spacing:.18em;text-transform:uppercase;
+    color:#3B342E;margin-top:auto;
+  }
+
+  /* ---- showtime chip: colour = status, fill = seats sold ---- */
+  .show{
+    position:relative;overflow:hidden;
+    border-left:3px solid var(--c);
+    background:var(--ink-raised);
+    padding:6px 7px;
+    display:flex;justify-content:space-between;align-items:baseline;gap:6px;
+    font-size:11px;
+  }
+  .show::before{
+    content:"";position:absolute;inset:0 auto 0 0;
+    width:var(--fill);background:var(--c);opacity:.22;
+  }
+  .show > *{position:relative;}
+  .show .t{letter-spacing:.02em;}
+  .show .n{font-weight:500;color:var(--c);white-space:nowrap;}
+  .cell.past .show{border-left-color:#4A443E;background:#100F0E;}
+  .cell.past .show::before{display:none;}
+  .cell.past .show .n{color:var(--bone-dim);}
+
+  /* ---- footer ---- */
+  footer{
+    margin-top:24px;border-top:1px solid var(--rule);padding-top:14px;
+    font-size:10px;letter-spacing:.1em;color:var(--bone-dim);
+    display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;
+  }
+  .banner{
+    border:1px solid var(--brass);color:var(--brass);
+    padding:9px 12px;margin-bottom:20px;font-size:10px;
+    letter-spacing:.13em;text-transform:uppercase;text-align:center;
+  }
+
+  @media (max-width:640px){
+    :root{--cell-min:78px;}
+    .cell{padding:5px 4px 6px;gap:3px;}
+    .show{font-size:9px;padding:4px 4px;flex-direction:column;gap:1px;}
+    .daynum{font-size:15px;}
+    .dark{display:none;}
+  }
+  @media (prefers-reduced-motion:reduce){*{transition:none!important;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="banner" id="banner" hidden></div>
+
+  <header class="mast">
+    <p class="eyebrow">The Magician's Study &middot; Las Vegas</p>
+    <div class="monthbar">
+      <button class="nav" id="prev" aria-label="Previous month">&#9664;</button>
+      <h1 id="monthLabel">—<span id="yearLabel"></span></h1>
+      <button class="nav" id="next" aria-label="Next month">&#9654;</button>
+    </div>
+    <div class="legend">
+      <span><b style="background:var(--open)"></b>Seats available</span>
+      <span><b style="background:var(--limited)"></b>Selling fast</span>
+      <span><b style="background:var(--sold)"></b>Sold out</span>
+    </div>
+  </header>
+
+  <div class="dow">
+    <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+  </div>
+  <div class="grid" id="grid"></div>
+
+  <footer>
+    <span id="stamp"></span>
+    <span>Times shown in Las Vegas local time</span>
+  </footer>
+</div>
+
+<script>
+const VENUE_TZ = "America/Los_Angeles";
+const FEED_URL = "availability.json";   // produced by the scraper
+
+/* ---------- venue-local "now", as a sortable "YYYY-MM-DD HH:MM" key ---------- */
+function venueNowKey(){
+  const parts = Object.fromEntries(
+    new Intl.DateTimeFormat("en-CA",{
+      timeZone:VENUE_TZ, year:"numeric", month:"2-digit", day:"2-digit",
+      hour:"2-digit", minute:"2-digit", hour12:false
+    }).formatToParts(new Date()).map(p=>[p.type,p.value])
+  );
+  const hh = parts.hour === "24" ? "00" : parts.hour;
+  return `${parts.year}-${parts.month}-${parts.day} ${hh}:${parts.minute}`;
+}
+
+/* ---------- availability rules ----------
+   state "cancelled" -> not rendered at all (guests must not enquire)
+   state "sold_out"  -> red
+   0        -> red    (sold out)
+   1 .. 20  -> yellow (selling fast)
+   21+      -> green  (seats available)
+   null     -> grey   (no data; must not imply either sold out or available) */
+function statusOf(p){
+  if(p.state === "sold_out") return {cls:"sold", label:"Sold out"};
+  const open = p.open;
+  if(open === null || open === undefined) return {cls:"unknown", label:"—"}; // no data → neutral, never red, never green
+  if(open === 0)  return {cls:"sold",    label:"Sold out"};
+  if(open < 21)   return {cls:"limited", label:open + " left"};
+  return            {cls:"open",         label:open + " left"};
+}
+const COLOUR = {open:"var(--open)", limited:"var(--limited)", sold:"var(--sold)", unknown:"var(--unknown)"};
+
+/* ---------- state ---------- */
+let feed = null;
+let cursor = null;   // {y, m}  m = 0-indexed
+
+/* ---------- load ---------- */
+async function load(){
+  try{
+    const res = await fetch(FEED_URL, {cache:"no-store"});
+    if(!res.ok) throw new Error(res.status);
+    feed = await res.json();
+  }catch(err){
+    feed = sampleFeed();
+    const b = document.getElementById("banner");
+    b.hidden = false;
+    b.textContent = "Sample data — no availability.json found. Run the scraper to see live numbers.";
+  }
+  const [y,m] = venueNowKey().slice(0,7).split("-").map(Number);
+  cursor = {y, m:m-1};
+  render();
+}
+
+/* ---------- render ---------- */
+function render(){
+  const nowKey = venueNowKey();
+  const {y,m} = cursor;
+
+  document.getElementById("monthLabel").firstChild.textContent =
+    new Date(y,m,1).toLocaleString("en-US",{month:"long"});
+  document.getElementById("yearLabel").textContent = y;
+
+  // index performances by date; cancelled shows are dropped entirely so the
+  // day renders as "dark" and no guest enquires about a show that isn't running
+  const byDate = {};
+  for(const p of feed.performances){
+    if(p.state === "cancelled") continue;
+    (byDate[p.date] ||= []).push(p);
+  }
+  for(const k in byDate) byDate[k].sort((a,b)=>a.time.localeCompare(b.time));
+
+  const first = new Date(y,m,1);
+  const start = new Date(y,m,1 - first.getDay());     // back up to Sunday
+  const grid = document.getElementById("grid");
+  grid.innerHTML = "";
+
+  for(let i=0;i<42;i++){
+    const d = new Date(start.getFullYear(), start.getMonth(), start.getDate()+i);
+    const iso = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+    const cell = document.createElement("div");
+    cell.className = "cell";
+    if(d.getMonth() !== m) cell.classList.add("spill");
+    if(iso === nowKey.slice(0,10)) cell.classList.add("today");
+    if(iso < nowKey.slice(0,10)) cell.classList.add("past");
+
+    const num = document.createElement("div");
+    num.className = "daynum";
+    num.textContent = d.getDate();
+    cell.appendChild(num);
+
+    const shows = byDate[iso] || [];
+    if(shows.length === 0){
+      const dk = document.createElement("div");
+      dk.className = "dark";
+      dk.textContent = "dark";
+      cell.appendChild(dk);
+    }
+
+    for(const s of shows){
+      const isPast = `${s.date} ${s.time}` < nowKey;
+      const st = statusOf(s);
+      const openN = (st.cls === "sold" && s.open === null) ? 0 : s.open;
+      const sold = feed.capacity && openN !== null && openN !== undefined
+        ? Math.round((1 - openN/feed.capacity) * 100) : 0;
+
+      const chip = document.createElement("div");
+      chip.className = "show";
+      chip.style.setProperty("--c", isPast ? "#4A443E" : COLOUR[st.cls]);
+      chip.style.setProperty("--fill", sold + "%");
+      chip.innerHTML =
+        `<span class="t">${fmtTime(s.time)}</span><span class="n">${isPast ? "past" : st.label}</span>`;
+      chip.title = `${fmtTime(s.time)} — ${isPast ? "performance has passed" : st.label}`;
+      if(isPast) chip.closest && cell.classList.add("has-past");
+      if(isPast) chip.classList.add("pastchip");
+      cell.appendChild(chip);
+      if(isPast){ chip.style.opacity = ".4"; }
+    }
+
+    grid.appendChild(cell);
+  }
+
+  // don't let people browse backwards past the current month
+  const cur = venueNowKey().slice(0,7);
+  document.getElementById("prev").disabled =
+    `${y}-${String(m+1).padStart(2,"0")}` <= cur;
+
+  const stamp = feed.updated_at
+    ? new Date(feed.updated_at).toLocaleString("en-US",{timeZone:VENUE_TZ, dateStyle:"medium", timeStyle:"short"})
+    : "unknown";
+  document.getElementById("stamp").textContent = "Availability updated " + stamp;
+}
+
+function fmtTime(hhmm){
+  let [h,mi] = hhmm.split(":").map(Number);
+  const ap = h >= 12 ? "pm" : "am";
+  h = h % 12 || 12;
+  return mi ? `${h}:${String(mi).padStart(2,"0")}${ap}` : `${h}${ap}`;
+}
+
+document.getElementById("prev").onclick = ()=>{ shift(-1); };
+document.getElementById("next").onclick = ()=>{ shift(1); };
+function shift(n){
+  const d = new Date(cursor.y, cursor.m + n, 1);
+  cursor = {y:d.getFullYear(), m:d.getMonth()};
+  render();
+}
+
+/* ---------- sample data (Thu–Sun, 7:00 & 9:30, house of 65) ---------- */
+function sampleFeed(){
+  const perf = [];
+  const known = {           // real figures from the dashboard screenshot
+    "2026-08-21 19:00":0,  "2026-08-21 21:30":0,
+    "2026-08-22 19:00":0,  "2026-08-22 21:30":23,
+    "2026-08-23 19:00":4,  "2026-08-23 21:30":35,
+    "2026-08-27 19:00":49, "2026-08-27 21:30":19,
+    "2026-08-28 19:00":9,  "2026-08-28 21:30":10
+  };
+  const d = new Date(2026,7,1), end = new Date(2026,10,1);
+  let seed = 7;
+  while(d < end){
+    if([0,4,5,6].includes(d.getDay())){   // Sun, Thu, Fri, Sat
+      const iso = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+      for(const t of ["19:00","21:30"]){
+        seed = (seed * 1103515245 + 12345) & 0x7fffffff;
+        const key = `${iso} ${t}`;
+        perf.push({date:iso, time:t, open: key in known ? known[key] : seed % 66});
+      }
+    }
+    d.setDate(d.getDate()+1);
+  }
+  return {updated_at:new Date().toISOString(), venue_timezone:VENUE_TZ, capacity:65, performances:perf};
+}
+
+load();
+</script>
+</body>
+</html>
