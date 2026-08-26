@@ -123,7 +123,8 @@
   }
   .show > *{position:relative;}
   .show .t{letter-spacing:.02em;}
-  .show .n{font-weight:500;color:var(--c);white-space:nowrap;}
+  .show .n{font-weight:500;color:var(--c);white-space:nowrap;
+           font-size:9px;letter-spacing:.12em;text-transform:uppercase;}
   .cell.past .show{border-left-color:#4A443E;background:#100F0E;}
   .cell.past .show::before{display:none;}
   .cell.past .show .n{color:var(--bone-dim);}
@@ -198,16 +199,15 @@ function venueNowKey(){
 
 /* ---------- availability rules ----------
    state "cancelled" -> not rendered at all (guests must not enquire)
-   state "sold_out"  -> red
-   0        -> red    (sold out)
-   1 .. 20  -> yellow (selling fast)
-   21+      -> green  (seats available)
+   0 seats / sold_out -> red, labelled SOLD OUT so it can't be misread
+   1 .. 20  -> yellow (selling fast)   -- colour only, no counts shown
+   21+      -> green  (seats available) -- colour only, no counts shown
    null     -> grey   (no data; must not imply either sold out or available) */
 function statusOf(p){
-  if(p.state === "sold_out") return {cls:"sold", label:""};
+  if(p.state === "sold_out") return {cls:"sold", label:"SOLD OUT"};
   const open = p.open;
   if(open === null || open === undefined) return {cls:"unknown", label:""};
-  if(open === 0)  return {cls:"sold",    label:""};
+  if(open === 0)  return {cls:"sold",    label:"SOLD OUT"};
   if(open < 21)   return {cls:"limited", label:""};
   return            {cls:"open",         label:""};
 }
@@ -262,7 +262,16 @@ function render(){
     const iso = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
     const cell = document.createElement("div");
     cell.className = "cell";
-    if(d.getMonth() !== m) cell.classList.add("spill");
+
+    // Days belonging to the previous/next month are rendered COMPLETELY blank —
+    // no date number, no showtimes. Guests were booking an October date while
+    // looking at the September page; an empty cell removes that trap entirely.
+    if(d.getMonth() !== m){
+      cell.classList.add("spill");
+      grid.appendChild(cell);
+      continue;
+    }
+
     if(iso === nowKey.slice(0,10)) cell.classList.add("today");
     if(iso < nowKey.slice(0,10)) cell.classList.add("past");
 
@@ -292,7 +301,9 @@ function render(){
       chip.style.setProperty("--fill", sold + "%");
       chip.innerHTML =
         `<span class="t">${fmtTime(s.time)}</span><span class="n">${isPast ? "past" : st.label}</span>`;
-      chip.title = `${fmtTime(s.time)} — ${isPast ? "performance has passed" : st.label}`;
+      chip.title = isPast
+        ? `${fmtTime(s.time)} — performance has passed`
+        : (st.label ? `${fmtTime(s.time)} — ${st.label}` : fmtTime(s.time));
       if(isPast) chip.closest && cell.classList.add("has-past");
       if(isPast) chip.classList.add("pastchip");
       cell.appendChild(chip);
