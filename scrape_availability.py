@@ -50,7 +50,7 @@ BASE = "https://tickets.themagiciansstudy.com"
 EVENT_HASH = "wZd"
 VENUE_TZ = ZoneInfo("America/Los_Angeles")
 CAPACITY = 65                  # house size; sanity check only
-HORIZON_DAYS = 75
+HORIZON_DAYS = 365             # cover the whole published schedule
 REQUEST_PAUSE = 0.4
 TIMEOUT = 20
 
