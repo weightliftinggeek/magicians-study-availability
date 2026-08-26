@@ -108,7 +108,8 @@
     color:#3B342E;margin-top:auto;
   }
 
-  /* ---- showtime chip: colour = status, fill = seats sold ---- */
+  /* ---- showtime chip: colour = status. Fill is deliberately uniform —
+         a proportional bar would let anyone read off the exact seat count ---- */
   .show{
     position:relative;overflow:hidden;
     border-left:3px solid var(--c);
@@ -118,8 +119,8 @@
     font-size:11px;
   }
   .show::before{
-    content:"";position:absolute;inset:0 auto 0 0;
-    width:var(--fill);background:var(--c);opacity:.22;
+    content:"";position:absolute;inset:0;
+    background:var(--c);opacity:.22;
   }
   .show > *{position:relative;}
   .show .t{letter-spacing:.02em;}
@@ -291,14 +292,10 @@ function render(){
     for(const s of shows){
       const isPast = `${s.date} ${s.time}` < nowKey;
       const st = statusOf(s);
-      const openN = (st.cls === "sold" && s.open === null) ? 0 : s.open;
-      const sold = feed.capacity && openN !== null && openN !== undefined
-        ? Math.round((1 - openN/feed.capacity) * 100) : 0;
 
       const chip = document.createElement("div");
       chip.className = "show";
       chip.style.setProperty("--c", isPast ? "#4A443E" : COLOUR[st.cls]);
-      chip.style.setProperty("--fill", sold + "%");
       chip.innerHTML =
         `<span class="t">${fmtTime(s.time)}</span><span class="n">${isPast ? "past" : st.label}</span>`;
       chip.title = isPast
