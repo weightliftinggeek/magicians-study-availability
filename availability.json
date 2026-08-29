@@ -1,13 +1,13 @@
 {
-  "updated_at": "2026-08-28T15:01:41.084623-07:00",
+  "updated_at": "2026-08-28T23:32:20.846191-07:00",
   "venue_timezone": "America/Los_Angeles",
   "capacity": 65,
   "performances": [
     {
       "date": "2026-08-28",
       "time": "19:00",
-      "open": 2,
-      "state": "on_sale"
+      "open": 0,
+      "state": "sold_out"
     },
     {
       "date": "2026-08-28",
@@ -30,13 +30,13 @@
     {
       "date": "2026-09-03",
       "time": "19:00",
-      "open": 31,
+      "open": 29,
       "state": "on_sale"
     },
     {
       "date": "2026-09-03",
       "time": "21:30",
-      "open": 20,
+      "open": 18,
       "state": "on_sale"
     },
     {
@@ -48,7 +48,7 @@
     {
       "date": "2026-09-04",
       "time": "21:30",
-      "open": 19,
+      "open": 17,
       "state": "on_sale"
     },
     {
@@ -66,7 +66,7 @@
     {
       "date": "2026-09-06",
       "time": "19:00",
-      "open": 6,
+      "open": 4,
       "state": "on_sale"
     },
     {
@@ -78,7 +78,7 @@
     {
       "date": "2026-09-10",
       "time": "19:00",
-      "open": 17,
+      "open": 15,
       "state": "on_sale"
     },
     {
@@ -132,13 +132,13 @@
     {
       "date": "2026-09-17",
       "time": "21:30",
-      "open": 20,
+      "open": 18,
       "state": "on_sale"
     },
     {
       "date": "2026-09-19",
       "time": "19:00",
-      "open": 30,
+      "open": 28,
       "state": "on_sale"
     },
     {
@@ -246,7 +246,7 @@
     {
       "date": "2026-10-11",
       "time": "19:00",
-      "open": 45,
+      "open": 44,
       "state": "on_sale"
     },
     {
@@ -618,7 +618,7 @@
     {
       "date": "2026-12-27",
       "time": "19:00",
-      "open": 34,
+      "open": 32,
       "state": "on_sale"
     },
     {
