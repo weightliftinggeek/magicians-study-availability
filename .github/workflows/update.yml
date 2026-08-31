@@ -2,16 +2,26 @@ name: Update availability
 
 on:
   schedule:
-    - cron: "0 */12 * * *"    # every 12 hours (UTC)
-  workflow_dispatch:            # lets you run it by hand from the Actions tab
+    # Access pattern agreed with FriendlySky:
+    #   next 14 days -> hourly        (~408 requests/day)
+    #   everything   -> once daily    (~196 requests/day)
+    - cron: "20 * * * *"      # hourly, near tier
+    - cron: "40 9 * * *"      # daily full sweep (09:40 UTC = ~02:40 Las Vegas)
+  workflow_dispatch:
+    inputs:
+      tier:
+        description: "Which tier to run"
+        required: true
+        default: near
+        type: choice
+        options: [near, full]
 
-# Only one run at a time; don't queue overlaps
 concurrency:
-  group: availability
+  group: availability          # never let two runs overlap the storefront
   cancel-in-progress: false
 
 permissions:
-  contents: write               # needed to commit availability.json back
+  contents: write
 
 jobs:
   scrape:
@@ -25,8 +35,19 @@ jobs:
 
       - run: pip install requests
 
+      - name: Decide tier
+        id: tier
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "tier=${{ inputs.tier }}" >> $GITHUB_OUTPUT
+          elif [ "${{ github.event.schedule }}" = "40 9 * * *" ]; then
+            echo "tier=full" >> $GITHUB_OUTPUT
+          else
+            echo "tier=near" >> $GITHUB_OUTPUT
+          fi
+
       - name: Scrape availability
-        run: python scrape_availability.py
+        run: python scrape_availability.py ${{ steps.tier.outputs.tier }}
 
       - name: Commit feed if it changed
         run: |
@@ -36,17 +57,7 @@ jobs:
           if git diff --cached --quiet; then
             echo "No change."
           else
-            git commit -m "availability: $(date -u +%Y-%m-%dT%H:%MZ)"
+            git commit -m "availability (${{ steps.tier.outputs.tier }}): $(date -u +%Y-%m-%dT%H:%MZ)"
+            git pull --rebase --autostash
             git push
           fi
-
-  # ---- Weekly heartbeat: proves the schedule is alive ----
-  # If this email stops arriving on Mondays, the whole thing has silently died.
-  heartbeat:
-    if: github.event_name == 'schedule'
-    runs-on: ubuntu-latest
-    needs: scrape
-    steps:
-      - run: echo "Availability job ran at $(date -u). Feed is being updated."
-      # Replace the echo above with an email/Telegram step once you pick a
-      # channel — ask Claude for the exact snippet for whichever you choose.
