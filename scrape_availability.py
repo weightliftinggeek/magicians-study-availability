@@ -2,36 +2,42 @@
 """
 scrape_availability.py  --  The Magician's Study live availability feed.
 
-Reads the storefront's own REST API (no login, no codeword, no browser):
+Runs in two tiers, per the access pattern agreed with FriendlySky:
 
-  1. GET /rest/events/${EVENT_HASH}?_branch=findByDomainNameOrHashId
-        -> `games` array = every showtime (hashId, begDate, begTime, status)
+    python scrape_availability.py near     # shows in the next 14 days  (hourly)
+    python scrape_availability.py full     # every show                 (once daily)
 
-  2. GET /rest/pkgs?_branch=findByGameIdAndUrlName&hashGameId=..&urlName=tickets
-        -> the ticket package for that show (pkgId). Stable, so cached.
+Approved volume: ~408/day (near, hourly) + ~196/day (full, daily) = ~604/day,
+about 0.007 requests/second sustained.
 
-  3. GET /rest/onlinePageDispatcher/firstPage?hashPkgId=..
-        -> read targetPkg.pkgItems, the SEG entries, each with an `inv` block:
-              invTotal   seats in that section
-              invSold    sold + comp
-              invRemain  still sellable (holds excluded)
+AGREED CONSTRAINTS -- do not change these without asking FriendlySky first:
+  * User-Agent:  MagiciansStudyCalendar/1.0 (+milo@example.com)
+  * Every request carries _client=MagiciansStudyCalendar so they can identify
+    our traffic in their access logs.
+  * One request at a time, with a gap between them. No concurrency.
+  * Read-only storefront calls only. No cart, no checkout, no back office.
 
-IMPORTANT: read targetPkg.pkgItems, NOT targetPkgItems. The latter is only
-"segments currently offered for sale" and goes empty for sold-out and
-cancelled shows -- which is why those used to come back as unknown. The
-former always carries the real inventory.
+ENDPOINTS (all GET, public storefront, no auth):
+  1. /rest/events/${EVENT_HASH}?_branch=findByDomainNameOrHashId
+       -> `games` array: hashId, begDate, begTime, urlName, status
+  2. /rest/pkgs?_branch=findByGameIdAndUrlName&hashGameId=..&urlName=tickets
+       -> package id for the show. Cached permanently; ~0 calls in steady state.
+  3. /rest/onlinePageDispatcher/firstPage?hashPkgId=..
+       -> read targetPkg.pkgItems (the SEG entries), each with an `inv` block:
+            invTotal / invSold / invRemain
 
-CLASSIFICATION (all automatic -- no manual labels anywhere):
+Read targetPkg.pkgItems, NOT targetPkgItems: the latter is only "segments
+currently offered for sale" and goes empty for sold-out and cancelled shows.
 
-    remain > 0                        -> on_sale    (colour by seat count)
-    remain = 0, holds small           -> sold_out   (red)
-    remain = 0, holds >= half house   -> cancelled  (blacked out)
+CLASSIFICATION (fully automatic, no manual labels):
+    remain > 0                       -> on_sale
+    remain = 0, holds small          -> sold_out   (red, labelled SOLD OUT)
+    remain = 0, holds >= half house  -> cancelled  (hidden from the calendar)
 
-A cancelled show has its unsold seats swept into "hold", which is what
-distinguishes it from a genuine sell-out. Verified against real data:
-  28 Aug 21:30  total 65, sold 63, remain 0, held  2  -> sold out
-   1 Oct 19:00  total 65, sold  0, remain 0, held 65  -> cancelled
-  24 Sep 19:00  total 65, sold  6, remain 0, held 59  -> cancelled
+A cancelled show has its unsold seats swept into hold, which is what separates
+it from a genuine sell-out. Verified against real data:
+    28 Aug 21:30  total 65, sold 63, remain 0, held  2  -> sold out
+     1 Oct 19:00  total 65, sold  0, remain 0, held 65  -> cancelled
 """
 
 import json
@@ -49,14 +55,18 @@ import requests
 BASE = "https://tickets.themagiciansstudy.com"
 EVENT_HASH = "wZd"
 VENUE_TZ = ZoneInfo("America/Los_Angeles")
+
 CAPACITY = 65                  # house size; sanity check only
-HORIZON_DAYS = 365             # cover the whole published schedule
-REQUEST_PAUSE = 0.4
+NEAR_DAYS = 14                 # "near" tier window
+HORIZON_DAYS = 365             # how far ahead the full sweep goes
+REQUEST_PAUSE = 0.4            # seconds between requests; serial, no concurrency
 TIMEOUT = 20
 
-# A show with remain=0 is treated as CANCELLED (not sold out) when at least
-# this fraction of the house sits on hold.
 CANCELLED_HOLD_FRACTION = 0.5
+
+# Agreed with FriendlySky so they can identify and shape our traffic.
+CLIENT_ID = "MagiciansStudyCalendar"
+USER_AGENT = "MagiciansStudyCalendar/1.0 (+milo@example.com)"
 
 OUT = pathlib.Path("availability.json")
 PKG_CACHE = pathlib.Path("pkg_cache.json")
@@ -71,13 +81,13 @@ SESSION.headers.update({
     "hashuserid": "",
     "lang": "",
     "Referer": f"{BASE}/event?e={EVENT_HASH}",
-    "User-Agent": ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                   "AppleWebKit/537.36 (KHTML, like Gecko) "
-                   "Chrome/131.0.0.0 Safari/537.36"),
+    "User-Agent": USER_AGENT,
 })
 
 
 def get_json(url):
+    """GET with the agreed _client tag appended, one retry, serial only."""
+    url = url + ("&" if "?" in url else "?") + f"_client={CLIENT_ID}"
     for attempt in (1, 2):
         try:
             r = SESSION.get(url, timeout=TIMEOUT)
@@ -91,15 +101,15 @@ def get_json(url):
 
 
 # ----------------------------------------------------------------------------
-# Step 1: every future show
+# Step 1: list shows (one call, whichever tier we're running)
 # ----------------------------------------------------------------------------
-def list_future_games():
+def list_games(tier):
     url = f"{BASE}/rest/events/${EVENT_HASH}?_branch=findByDomainNameOrHashId&_s=1"
     data = get_json(url)["data"]
     games = data.get("games", [])
 
     today = datetime.now(VENUE_TZ).date()
-    horizon = today + timedelta(days=HORIZON_DAYS)
+    cutoff = today + timedelta(days=NEAR_DAYS if tier == "near" else HORIZON_DAYS)
 
     out = []
     for g in games:
@@ -107,29 +117,34 @@ def list_future_games():
         if not beg:
             continue
         d = datetime.strptime(beg, "%Y-%m-%d").date()
-        if d < today or d > horizon:
+        if d < today or d > cutoff:
             continue
         if g.get("status") != "Y":
             continue
+        url_name = g.get("urlName") or ""
         out.append({
             "hashGameId": g["hashId"],
             "date": beg,
             "time": g.get("begTime", "")[:5],
+            # Guest-facing purchase link. Deliberately WITHOUT _client -- that
+            # tag is for our automated calls only; guest clicks are ordinary
+            # customer traffic and must not be tagged as ours.
+            "url": f"{BASE}/event/{url_name}/tickets/seg?e={EVENT_HASH}" if url_name else None,
         })
     out.sort(key=lambda x: (x["date"], x["time"]))
     return out
 
 
 # ----------------------------------------------------------------------------
-# Step 2: game -> pkgId (cached)
+# Step 2: game -> pkgId (cached permanently)
 # ----------------------------------------------------------------------------
-def load_pkg_cache():
-    if PKG_CACHE.exists():
+def load_json(path, default):
+    if path.exists():
         try:
-            return json.loads(PKG_CACHE.read_text())
+            return json.loads(path.read_text())
         except Exception:
-            return {}
-    return {}
+            return default
+    return default
 
 
 def pkg_id_for(game_hash, cache):
@@ -153,11 +168,8 @@ def inventory_for(pkg_hash):
     time.sleep(REQUEST_PAUSE)
     data = get_json(url).get("data", {})
 
-    # Always read the package DEFINITION, which carries inventory even when
-    # the show isn't currently offered for sale.
     pkg = data.get("targetPkg") or {}
-    segs = [i for i in (pkg.get("pkgItems") or [])
-            if i.get("pkgItemType") == "SEG"]
+    segs = [i for i in (pkg.get("pkgItems") or []) if i.get("pkgItemType") == "SEG"]
     if not segs:
         raise RuntimeError(f"pkg {pkg_hash}: no SEG entries in targetPkg.pkgItems")
 
@@ -168,7 +180,6 @@ def inventory_for(pkg_hash):
         total += int(inv.get("invTotal") or 0)
         sold += int(inv.get("invSold") or 0)
 
-    # contract checks -- a shape change must fail loudly, not silently mislead
     if total == 0:
         raise RuntimeError(f"pkg {pkg_hash}: invTotal is 0")
     if total > CAPACITY + 5:
@@ -184,61 +195,72 @@ def inventory_for(pkg_hash):
     else:
         state = "sold_out"
 
-    return remain, total, sold, held, state
+    return remain, state
 
 
 # ----------------------------------------------------------------------------
 # Orchestrate
 # ----------------------------------------------------------------------------
 def main():
-    games = list_future_games()
-    if len(games) < 3:
-        die(f"Only {len(games)} future shows found -- expected dozens. "
+    tier = sys.argv[1] if len(sys.argv) > 1 else "full"
+    if tier not in ("near", "full"):
+        die(f"unknown tier {tier!r} -- use 'near' or 'full'")
+
+    games = list_games(tier)
+    floor = 3 if tier == "near" else 20
+    if len(games) < floor:
+        die(f"Only {len(games)} shows found for tier '{tier}' -- expected more. "
             f"Keeping the last good feed.")
 
-    cache = load_pkg_cache()
-    performances = []
+    cache = load_json(PKG_CACHE, {})
+    previous = load_json(OUT, {}).get("performances", [])
+    prev_by_key = {(p["date"], p["time"]): p for p in previous}
+
+    fresh = {}
     failures = []
     counts = {"on_sale": 0, "sold_out": 0, "cancelled": 0}
 
     for g in games:
+        key = (g["date"], g["time"])
         try:
             pkg = pkg_id_for(g["hashGameId"], cache)
-            remain, total, sold, held, state = inventory_for(pkg)
+            remain, state = inventory_for(pkg)
             counts[state] += 1
-            performances.append({
-                "date": g["date"],
-                "time": g["time"],
-                "open": remain,
-                "state": state,
-            })
+            fresh[key] = {"date": g["date"], "time": g["time"],
+                          "open": remain, "state": state, "url": g["url"]}
         except Exception as e:
             failures.append(f"{g['date']} {g['time']}: {e}")
-            performances.append({
-                "date": g["date"],
-                "time": g["time"],
-                "open": None,
-                "state": "unknown",
-            })
+            # keep whatever we knew before rather than blanking the show
+            fresh[key] = prev_by_key.get(key, {
+                "date": g["date"], "time": g["time"],
+                "open": None, "state": "unknown", "url": g["url"]})
 
-    ok = sum(1 for p in performances if p["state"] != "unknown")
-    if ok < max(3, len(performances) // 2):
-        die(f"Only {ok}/{len(performances)} shows classified. "
+    ok = sum(1 for k in fresh if fresh[k]["state"] != "unknown")
+    if ok < max(3, len(fresh) // 2):
+        die(f"Only {ok}/{len(fresh)} shows classified in tier '{tier}'. "
             f"Refusing to overwrite the good feed. First errors: {failures[:3]}")
 
-    PKG_CACHE.write_text(json.dumps(cache, indent=2))
+    # The near tier refreshes only its window; everything outside it is carried
+    # over from the last full sweep, so hourly runs never wipe future dates.
+    merged = dict(prev_by_key)
+    merged.update(fresh)
 
-    feed = {
+    today = datetime.now(VENUE_TZ).date().isoformat()
+    performances = [p for k, p in sorted(merged.items()) if p["date"] >= today]
+
+    PKG_CACHE.write_text(json.dumps(cache, indent=2))
+    write_atomic(OUT, {
         "updated_at": datetime.now(VENUE_TZ).isoformat(),
+        "tier": tier,
         "venue_timezone": "America/Los_Angeles",
         "capacity": CAPACITY,
         "performances": performances,
-    }
-    write_atomic(OUT, feed)
+    })
 
-    print(f"OK  {ok}/{len(performances)} shows classified: "
-          f"{counts['on_sale']} on sale, {counts['sold_out']} sold out, "
-          f"{counts['cancelled']} cancelled, {len(failures)} unknown.")
+    print(f"OK [{tier}]  refreshed {len(fresh)} shows "
+          f"({counts['on_sale']} on sale, {counts['sold_out']} sold out, "
+          f"{counts['cancelled']} cancelled, {len(failures)} failed); "
+          f"feed now holds {len(performances)} shows.")
     for f in failures[:10]:
         print("   -", f)
 
