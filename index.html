@@ -117,7 +117,12 @@
     padding:6px 7px;
     display:flex;justify-content:space-between;align-items:baseline;gap:6px;
     font-size:11px;
+    color:var(--bone);text-decoration:none;
   }
+  a.show{cursor:pointer;transition:filter .15s, outline-color .15s;
+         outline:1px solid transparent;}
+  a.show:hover{filter:brightness(1.45);}
+  a.show:focus-visible{outline-color:var(--brass);outline-offset:1px;}
   .show::before{
     content:"";position:absolute;inset:0;
     background:var(--c);opacity:.22;
@@ -293,14 +298,20 @@ function render(){
       const isPast = `${s.date} ${s.time}` < nowKey;
       const st = statusOf(s);
 
-      const chip = document.createElement("div");
+      const chip = document.createElement(s.url && !isPast ? "a" : "div");
       chip.className = "show";
+      if(s.url && !isPast){
+        chip.href = s.url;              // that show's existing ticket page
+        chip.target = "_blank";
+        chip.rel = "noopener noreferrer";
+      }
       chip.style.setProperty("--c", isPast ? "#4A443E" : COLOUR[st.cls]);
       chip.innerHTML =
         `<span class="t">${fmtTime(s.time)}</span><span class="n">${isPast ? "past" : st.label}</span>`;
       chip.title = isPast
         ? `${fmtTime(s.time)} — performance has passed`
-        : (st.label ? `${fmtTime(s.time)} — ${st.label}` : fmtTime(s.time));
+        : (st.label ? `${fmtTime(s.time)} — ${st.label} — book tickets`
+                    : `${fmtTime(s.time)} — book tickets`);
       if(isPast) chip.closest && cell.classList.add("has-past");
       if(isPast) chip.classList.add("pastchip");
       cell.appendChild(chip);
