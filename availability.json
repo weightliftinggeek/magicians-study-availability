@@ -1,6 +1,6 @@
 {
-  "updated_at": "2026-09-03T04:16:26.781305-07:00",
-  "tier": "near",
+  "updated_at": "2026-09-03T06:52:36.850332-07:00",
+  "tier": "full",
   "venue_timezone": "America/Los_Angeles",
   "capacity": 65,
   "performances": [
@@ -35,7 +35,7 @@
     {
       "date": "2026-09-05",
       "time": "19:00",
-      "open": 15,
+      "open": 13,
       "state": "on_sale",
       "url": "https://tickets.themagiciansstudy.com/event/the-magicians-study-09-05-2026-1900/tickets/seg?e=wZd"
     },
@@ -105,7 +105,7 @@
     {
       "date": "2026-09-13",
       "time": "19:00",
-      "open": 34,
+      "open": 31,
       "state": "on_sale",
       "url": "https://tickets.themagiciansstudy.com/event/the-magicians-study-09-13-2026-1900/tickets/seg?e=wZd"
     },
@@ -119,7 +119,7 @@
     {
       "date": "2026-09-17",
       "time": "19:00",
-      "open": 13,
+      "open": 11,
       "state": "on_sale",
       "url": "https://tickets.themagiciansstudy.com/event/the-magicians-study-09-17-2026-1900/tickets/seg?e=wZd"
     },
@@ -133,7 +133,7 @@
     {
       "date": "2026-09-19",
       "time": "19:00",
-      "open": 28,
+      "open": 23,
       "state": "on_sale",
       "url": "https://tickets.themagiciansstudy.com/event/the-magicians-study-09-19-2026-1900/tickets/seg?e=wZd"
     },
@@ -147,7 +147,7 @@
     {
       "date": "2026-09-20",
       "time": "19:00",
-      "open": 38,
+      "open": 35,
       "state": "on_sale",
       "url": "https://tickets.themagiciansstudy.com/event/the-magicians-study-09-20-2026-1900/tickets/seg?e=wZd"
     },
@@ -175,21 +175,21 @@
     {
       "date": "2026-10-02",
       "time": "19:00",
-      "open": 35,
+      "open": 27,
       "state": "on_sale",
       "url": "https://tickets.themagiciansstudy.com/event/the-magicians-study-10-02-2026-1900/tickets/seg?e=wZd"
     },
     {
       "date": "2026-10-02",
       "time": "21:30",
-      "open": 9,
+      "open": 7,
       "state": "on_sale",
       "url": "https://tickets.themagiciansstudy.com/event/the-magicians-study-10-02-2026-2130/tickets/seg?e=wZd"
     },
     {
       "date": "2026-10-03",
       "time": "19:00",
-      "open": 51,
+      "open": 49,
       "state": "on_sale",
       "url": "https://tickets.themagiciansstudy.com/event/the-magicians-study-10-03-2026-1900/tickets/seg?e=wZd"
     },
@@ -224,14 +224,14 @@
     {
       "date": "2026-10-08",
       "time": "21:30",
-      "open": 54,
+      "open": 51,
       "state": "on_sale",
       "url": "https://tickets.themagiciansstudy.com/event/the-magicians-study-10-08-2026-2130/tickets/seg?e=wZd"
     },
     {
       "date": "2026-10-09",
       "time": "19:00",
-      "open": 46,
+      "open": 44,
       "state": "on_sale",
       "url": "https://tickets.themagiciansstudy.com/event/the-magicians-study-10-09-2026-1900/tickets/seg?e=wZd"
     },
@@ -329,7 +329,7 @@
     {
       "date": "2026-10-23",
       "time": "19:00",
-      "open": 42,
+      "open": 40,
       "state": "on_sale",
       "url": "https://tickets.themagiciansstudy.com/event/the-magicians-study-10-23-2026-1900/tickets/seg?e=wZd"
     },
@@ -413,7 +413,7 @@
     {
       "date": "2026-11-01",
       "time": "19:00",
-      "open": 53,
+      "open": 50,
       "state": "on_sale",
       "url": "https://tickets.themagiciansstudy.com/event/the-magicians-study-11-01-2026-1900/tickets/seg?e=wZd"
     },
@@ -441,7 +441,7 @@
     {
       "date": "2026-11-06",
       "time": "19:00",
-      "open": 56,
+      "open": 54,
       "state": "on_sale",
       "url": "https://tickets.themagiciansstudy.com/event/the-magicians-study-11-06-2026-1900/tickets/seg?e=wZd"
     },
@@ -476,7 +476,7 @@
     {
       "date": "2026-11-08",
       "time": "21:30",
-      "open": 46,
+      "open": 44,
       "state": "on_sale",
       "url": "https://tickets.themagiciansstudy.com/event/the-magicians-study-11-08-2026-2130/tickets/seg?e=wZd"
     },
@@ -504,7 +504,7 @@
     {
       "date": "2026-11-14",
       "time": "21:30",
-      "open": 56,
+      "open": 48,
       "state": "on_sale",
       "url": "https://tickets.themagiciansstudy.com/event/the-magicians-study-11-14-2026-2130/tickets/seg?e=wZd"
     },
@@ -553,7 +553,7 @@
     {
       "date": "2026-12-10",
       "time": "19:00",
-      "open": 54,
+      "open": 52,
       "state": "on_sale",
       "url": "https://tickets.themagiciansstudy.com/event/the-magicians-study-12-10-2026-1900/tickets/seg?e=wZd"
     },
@@ -805,7 +805,7 @@
     {
       "date": "2027-01-16",
       "time": "19:00",
-      "open": 58,
+      "open": 56,
       "state": "on_sale",
       "url": "https://tickets.themagiciansstudy.com/event/the-magicians-study---700-pm-01-16-2027-1900/tickets/seg?e=wZd"
     },
@@ -917,7 +917,7 @@
     {
       "date": "2027-02-05",
       "time": "21:30",
-      "open": 58,
+      "open": 56,
       "state": "on_sale",
       "url": "https://tickets.themagiciansstudy.com/event/the-magicians-study---930-pm-02-05-2027-2130/tickets/seg?e=wZd"
     },
