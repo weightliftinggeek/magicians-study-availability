@@ -1,6 +1,6 @@
 {
-  "updated_at": "2026-09-03T06:52:36.850332-07:00",
-  "tier": "full",
+  "updated_at": "2026-09-03T08:01:23.512292-07:00",
+  "tier": "near",
   "venue_timezone": "America/Los_Angeles",
   "capacity": 65,
   "performances": [
@@ -28,7 +28,7 @@
     {
       "date": "2026-09-04",
       "time": "21:30",
-      "open": 8,
+      "open": 6,
       "state": "on_sale",
       "url": "https://tickets.themagiciansstudy.com/event/the-magicians-study-09-04-2026-2130/tickets/seg?e=wZd"
     },
@@ -98,7 +98,7 @@
     {
       "date": "2026-09-12",
       "time": "21:30",
-      "open": 11,
+      "open": 8,
       "state": "on_sale",
       "url": "https://tickets.themagiciansstudy.com/event/the-magicians-study-09-12-2026-2130/tickets/seg?e=wZd"
     },
