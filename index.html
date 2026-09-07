@@ -33,6 +33,7 @@
     font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace;
     -webkit-font-smoothing:antialiased;
     padding:clamp(16px,4vw,48px);
+    padding-bottom:clamp(10px,2vw,20px);
   }
 
   .wrap{max-width:1040px;margin:0 auto;}
@@ -388,11 +389,18 @@ function sampleFeed(){
         can resize instead of showing an inner scrollbar ---- */
 function postHeight(){
   if(window.parent === window) return;
-  const h = document.documentElement.scrollHeight;
+  const h = Math.ceil(document.documentElement.getBoundingClientRect().height);
   window.parent.postMessage({magiciansStudyCalendarHeight: h}, "*");
 }
 window.addEventListener("resize", postHeight);
 new MutationObserver(postHeight).observe(document.body, {childList:true, subtree:true});
+window.addEventListener("load", postHeight);
+
+/* The host page may attach its listener AFTER we've already posted (Squarespace
+   injects code blocks late), so it can also ask us at any time. */
+window.addEventListener("message", function(e){
+  if(e.data && e.data.magiciansStudyCalendarRequestHeight) postHeight();
+});
 
 load();
 </script>
