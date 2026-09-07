@@ -149,10 +149,12 @@
 
   @media (max-width:640px){
     :root{--cell-min:78px;}
+    body{padding:12px 10px 8px;}
     .cell{padding:5px 4px 6px;gap:3px;}
     .show{font-size:9px;padding:4px 4px;flex-direction:column;gap:1px;}
     .daynum{font-size:15px;}
     .dark{display:none;}
+    footer{margin-top:14px;padding-top:10px;}
   }
   @media (prefers-reduced-motion:reduce){*{transition:none!important;}}
 </style>
@@ -263,7 +265,13 @@ function render(){
   const grid = document.getElementById("grid");
   grid.innerHTML = "";
 
-  for(let i=0;i<42;i++){
+  // Draw only the weeks this month actually occupies. Blanked-out
+  // neighbouring-month cells would otherwise leave an entirely empty final
+  // row — the dead space at the bottom, worst on mobile.
+  const daysInMonth = new Date(y, m+1, 0).getDate();
+  const weeks = Math.ceil((first.getDay() + daysInMonth) / 7);
+
+  for(let i=0;i<weeks*7;i++){
     const d = new Date(start.getFullYear(), start.getMonth(), start.getDate()+i);
     const iso = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
     const cell = document.createElement("div");
@@ -330,6 +338,9 @@ function render(){
     ? new Date(feed.updated_at).toLocaleString("en-US",{timeZone:VENUE_TZ, dateStyle:"medium", timeStyle:"short"})
     : "unknown";
   document.getElementById("stamp").textContent = "Availability updated " + stamp;
+
+  // tell the host page our new height right away (months differ in length)
+  if(typeof postHeight === "function") requestAnimationFrame(postHeight);
 }
 
 function fmtTime(hhmm){
@@ -372,6 +383,16 @@ function sampleFeed(){
   }
   return {updated_at:new Date().toISOString(), venue_timezone:VENUE_TZ, capacity:65, performances:perf};
 }
+
+/* ---- when embedded, tell the host page how tall we are so the frame
+        can resize instead of showing an inner scrollbar ---- */
+function postHeight(){
+  if(window.parent === window) return;
+  const h = document.documentElement.scrollHeight;
+  window.parent.postMessage({magiciansStudyCalendarHeight: h}, "*");
+}
+window.addEventListener("resize", postHeight);
+new MutationObserver(postHeight).observe(document.body, {childList:true, subtree:true});
 
 load();
 </script>
