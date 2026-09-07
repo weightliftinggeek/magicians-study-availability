@@ -104,6 +104,14 @@ def get_json(url):
 # Step 1: list shows (one call, whichever tier we're running)
 # ----------------------------------------------------------------------------
 def list_games(tier):
+    """
+    Returns (tier_games, all_live_keys).
+
+    One call gives us EVERY show and its status, so even the hourly near-tier
+    run can tell which shows have been taken off sale anywhere in the calendar
+    -- at no extra request cost. That's what lets a removal disappear within
+    the hour instead of waiting for the daily sweep.
+    """
     url = f"{BASE}/rest/events/${EVENT_HASH}?_branch=findByDomainNameOrHashId&_s=1"
     data = get_json(url)["data"]
     games = data.get("games", [])
@@ -111,28 +119,37 @@ def list_games(tier):
     today = datetime.now(VENUE_TZ).date()
     cutoff = today + timedelta(days=NEAR_DAYS if tier == "near" else HORIZON_DAYS)
 
-    out = []
+    tier_games = []
+    all_live_keys = set()
+
     for g in games:
         beg = g.get("begDate")
         if not beg:
             continue
         d = datetime.strptime(beg, "%Y-%m-%d").date()
-        if d < today or d > cutoff:
+        if d < today:
             continue
-        if g.get("status") != "Y":
+        if g.get("status") != "Y":       # taken off sale -> not live
+            continue
+
+        t = g.get("begTime", "")[:5]
+        all_live_keys.add((beg, t))
+
+        if d > cutoff:
             continue
         url_name = g.get("urlName") or ""
-        out.append({
+        tier_games.append({
             "hashGameId": g["hashId"],
             "date": beg,
-            "time": g.get("begTime", "")[:5],
+            "time": t,
             # Guest-facing purchase link. Deliberately WITHOUT _client -- that
             # tag is for our automated calls only; guest clicks are ordinary
             # customer traffic and must not be tagged as ours.
             "url": f"{BASE}/event/{url_name}/tickets/seg?e={EVENT_HASH}" if url_name else None,
         })
-    out.sort(key=lambda x: (x["date"], x["time"]))
-    return out
+
+    tier_games.sort(key=lambda x: (x["date"], x["time"]))
+    return tier_games, all_live_keys
 
 
 # ----------------------------------------------------------------------------
@@ -206,7 +223,7 @@ def main():
     if tier not in ("near", "full"):
         die(f"unknown tier {tier!r} -- use 'near' or 'full'")
 
-    games = list_games(tier)
+    games, all_live_keys = list_games(tier)
     floor = 3 if tier == "near" else 20
     if len(games) < floor:
         die(f"Only {len(games)} shows found for tier '{tier}' -- expected more. "
@@ -240,9 +257,14 @@ def main():
         die(f"Only {ok}/{len(fresh)} shows classified in tier '{tier}'. "
             f"Refusing to overwrite the good feed. First errors: {failures[:3]}")
 
-    # The near tier refreshes only its window; everything outside it is carried
-    # over from the last full sweep, so hourly runs never wipe future dates.
-    merged = dict(prev_by_key)
+    # Carry forward shows outside this tier's window, but ONLY if they are
+    # still live. A show taken off sale vanishes from the games list, and the
+    # old logic kept it forever, frozen at its last known state -- which is
+    # why a pulled show stayed on the calendar showing seats available.
+    # all_live_keys comes free with the call we already make, so removals are
+    # reflected on the very next run, whatever tier it is.
+    merged = {k: v for k, v in prev_by_key.items() if k in all_live_keys}
+    dropped = [k for k in prev_by_key if k not in all_live_keys]
     merged.update(fresh)
 
     today = datetime.now(VENUE_TZ).date().isoformat()
@@ -260,7 +282,10 @@ def main():
     print(f"OK [{tier}]  refreshed {len(fresh)} shows "
           f"({counts['on_sale']} on sale, {counts['sold_out']} sold out, "
           f"{counts['cancelled']} cancelled, {len(failures)} failed); "
+          f"removed {len(dropped)} off-sale; "
           f"feed now holds {len(performances)} shows.")
+    for k in dropped[:10]:
+        print(f"   - removed (off sale): {k[0]} {k[1]}")
     for f in failures[:10]:
         print("   -", f)
 
