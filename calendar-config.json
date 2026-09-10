@@ -1,0 +1,21 @@
+{
+  "_comment": [
+    "Controls which performances appear on the PUBLIC calendar.",
+    "Anything hidden here never reaches availability.json at all, so it",
+    "cannot be found by the public. Private shows stay fully purchasable",
+    "through their own direct link.",
+    "",
+    "public_showtimes: ONLY these start times appear on the calendar.",
+    "  Any performance at any other time is treated as private and hidden",
+    "  automatically -- no action needed when a private show is added.",
+    "",
+    "hide: specific performances to hide regardless of their time.",
+    "  Use \"YYYY-MM-DD\" to hide a whole day, or \"YYYY-MM-DD HH:MM\"",
+    "  (24-hour) to hide one performance."
+  ],
+
+  "public_showtimes": ["19:00", "21:30"],
+
+  "hide": [
+  ]
+}
