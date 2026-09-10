@@ -1,0 +1,17 @@
+# Performances to keep OFF the public calendar.
+#
+# One per line. Two formats:
+#     2026-11-06 19:00     hides just that performance
+#     2026-11-06           hides the whole day
+#
+# Lines starting with # are notes and are ignored.
+# Blank lines are fine.
+#
+# Hidden shows stay completely normal in FriendlySky - still on sale,
+# guests with the private link buy as usual. They just aren't listed
+# on the website.
+#
+# Anything not at 7:00pm or 9:30pm is hidden automatically; you only
+# need this file for buyouts at the normal showtimes.
+
+# ---- add lines below this one ----
