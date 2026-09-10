@@ -15,4 +15,3 @@
 # need this file for buyouts at the normal showtimes.
 
 # ---- add lines below this one ----
-2027-02-26 19:00
