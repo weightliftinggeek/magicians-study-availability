@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-09-09T20:51:41.234035-07:00",
+  "updated_at": "2026-09-09T20:57:14.829530-07:00",
   "tier": "full",
   "venue_timezone": "America/Los_Angeles",
   "capacity": 65,
@@ -955,13 +955,6 @@
       "open": 58,
       "state": "on_sale",
       "url": "https://tickets.themagiciansstudy.com/event/the-magicians-study---700-pm-02-26-2027-1900/tickets/seg?e=wZd"
-    },
-    {
-      "date": "2027-02-26",
-      "time": "21:30",
-      "open": 58,
-      "state": "on_sale",
-      "url": "https://tickets.themagiciansstudy.com/event/the-magicians-study---930-pm-02-26-2027-2130/tickets/seg?e=wZd"
     },
     {
       "date": "2027-02-27",
