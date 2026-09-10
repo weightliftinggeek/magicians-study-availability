@@ -44,6 +44,7 @@ import json
 import sys
 import time
 import pathlib
+import re
 from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 
@@ -70,6 +71,62 @@ USER_AGENT = "MagiciansStudyCalendar/1.0 (+milo@example.com)"
 
 OUT = pathlib.Path("availability.json")
 PKG_CACHE = pathlib.Path("pkg_cache.json")
+CONFIG = pathlib.Path("calendar-config.json")
+HIDE_LIST = pathlib.Path("hidden-shows.txt")
+
+HIDE_PATTERN = re.compile(r"^\d{4}-\d{2}-\d{2}( \d{2}:\d{2})?$")
+
+
+def load_config():
+    """
+    Which performances belong on the PUBLIC calendar.
+
+    FAILS CLOSED. If either file exists but can't be read or contains a line
+    we don't understand, we stop the run rather than publish. Falling back to
+    defaults would silently drop the hide list and expose a private buyout --
+    the one mistake this whole mechanism exists to prevent. Stopping instead
+    leaves the previous good feed in place, which is always safe.
+    """
+    public_showtimes = ["19:00", "21:30"]
+    hide = set()
+
+    if CONFIG.exists():
+        try:
+            loaded = json.loads(CONFIG.read_text())
+        except Exception as e:
+            die(f"{CONFIG} is not valid JSON ({e}). Refusing to publish, "
+                f"because ignoring it could expose a private show. "
+                f"Fix the file and re-run.")
+        times = loaded.get("public_showtimes")
+        if isinstance(times, list) and times:
+            public_showtimes = [str(t)[:5] for t in times]
+
+    if HIDE_LIST.exists():
+        try:
+            lines = HIDE_LIST.read_text().splitlines()
+        except Exception as e:
+            die(f"{HIDE_LIST} could not be read ({e}). Refusing to publish.")
+        for n, raw in enumerate(lines, 1):
+            line = raw.split("#", 1)[0].strip()
+            if not line:
+                continue
+            if not HIDE_PATTERN.match(line):
+                die(f"{HIDE_LIST} line {n}: {raw.strip()!r} isn't a valid entry. "
+                    f"Use 'YYYY-MM-DD HH:MM' or 'YYYY-MM-DD' (24-hour time). "
+                    f"Refusing to publish until it's fixed.")
+            hide.add(line)
+
+    return {"public_showtimes": public_showtimes, "hide": hide}
+
+
+def is_public(date, time, cfg):
+    """A performance is public only if its start time is a listed public
+    showtime AND it isn't explicitly hidden."""
+    if time not in cfg["public_showtimes"]:
+        return False
+    if date in cfg["hide"] or f"{date} {time}" in cfg["hide"]:
+        return False
+    return True
 
 SESSION = requests.Session()
 SESSION.headers.update({
@@ -103,14 +160,17 @@ def get_json(url):
 # ----------------------------------------------------------------------------
 # Step 1: list shows (one call, whichever tier we're running)
 # ----------------------------------------------------------------------------
-def list_games(tier):
+def list_games(tier, cfg):
     """
-    Returns (tier_games, all_live_keys).
+    Returns (tier_games, all_live_keys, hidden).
 
     One call gives us EVERY show and its status, so even the hourly near-tier
     run can tell which shows have been taken off sale anywhere in the calendar
     -- at no extra request cost. That's what lets a removal disappear within
     the hour instead of waiting for the daily sweep.
+
+    Private performances are filtered out HERE, before any inventory is
+    fetched, so they never reach availability.json -- which is a public file.
     """
     url = f"{BASE}/rest/events/${EVENT_HASH}?_branch=findByDomainNameOrHashId&_s=1"
     data = get_json(url)["data"]
@@ -121,6 +181,7 @@ def list_games(tier):
 
     tier_games = []
     all_live_keys = set()
+    hidden = []
 
     for g in games:
         beg = g.get("begDate")
@@ -133,6 +194,11 @@ def list_games(tier):
             continue
 
         t = g.get("begTime", "")[:5]
+
+        if not is_public(beg, t, cfg):   # private -> never published
+            hidden.append(f"{beg} {t}")
+            continue
+
         all_live_keys.add((beg, t))
 
         if d > cutoff:
@@ -149,7 +215,7 @@ def list_games(tier):
         })
 
     tier_games.sort(key=lambda x: (x["date"], x["time"]))
-    return tier_games, all_live_keys
+    return tier_games, all_live_keys, hidden
 
 
 # ----------------------------------------------------------------------------
@@ -223,7 +289,8 @@ def main():
     if tier not in ("near", "full"):
         die(f"unknown tier {tier!r} -- use 'near' or 'full'")
 
-    games, all_live_keys = list_games(tier)
+    cfg = load_config()
+    games, all_live_keys, hidden = list_games(tier, cfg)
     floor = 3 if tier == "near" else 20
     if len(games) < floor:
         die(f"Only {len(games)} shows found for tier '{tier}' -- expected more. "
@@ -283,7 +350,10 @@ def main():
           f"({counts['on_sale']} on sale, {counts['sold_out']} sold out, "
           f"{counts['cancelled']} cancelled, {len(failures)} failed); "
           f"removed {len(dropped)} off-sale; "
+          f"hid {len(hidden)} private; "
           f"feed now holds {len(performances)} shows.")
+    for h in hidden[:10]:
+        print(f"   - hidden (private, not published): {h}")
     for k in dropped[:10]:
         print(f"   - removed (off sale): {k[0]} {k[1]}")
     for f in failures[:10]:
