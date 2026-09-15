@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-09-14T18:29:03.800989-07:00",
+  "updated_at": "2026-09-15T00:45:56.681519-07:00",
   "tier": "near",
   "venue_timezone": "America/Los_Angeles",
   "capacity": 65,
@@ -28,8 +28,8 @@
     {
       "date": "2026-09-19",
       "time": "21:30",
-      "open": 1,
-      "state": "on_sale",
+      "open": 0,
+      "state": "sold_out",
       "url": "https://tickets.themagiciansstudy.com/event/the-magicians-study-09-19-2026-2130/tickets/seg?e=wZd"
     },
     {
