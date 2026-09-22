@@ -1,6 +1,6 @@
 {
-  "updated_at": "2026-09-21T17:08:00.180682-07:00",
-  "tier": "near",
+  "updated_at": "2026-09-21T18:24:17.392230-07:00",
+  "tier": "full",
   "venue_timezone": "America/Los_Angeles",
   "capacity": 65,
   "performances": [
@@ -252,14 +252,14 @@
     {
       "date": "2026-11-01",
       "time": "21:30",
-      "open": 52,
+      "open": 50,
       "state": "on_sale",
       "url": "https://tickets.themagiciansstudy.com/event/the-magicians-study-11-01-2026-2130/tickets/seg?e=wZd"
     },
     {
       "date": "2026-11-05",
       "time": "19:00",
-      "open": 38,
+      "open": 36,
       "state": "on_sale",
       "url": "https://tickets.themagiciansstudy.com/event/the-magicians-study-11-05-2026-1900/tickets/seg?e=wZd"
     },
@@ -859,20 +859,6 @@
       "url": "https://tickets.themagiciansstudy.com/event/the-magicians-study---930-pm-02-26-2027-2130/tickets/seg?e=wZd"
     },
     {
-      "date": "2027-02-27",
-      "time": "19:00",
-      "open": 58,
-      "state": "on_sale",
-      "url": "https://tickets.themagiciansstudy.com/event/the-magicians-study---700-pm-02-27-2027-1900/tickets/seg?e=wZd"
-    },
-    {
-      "date": "2027-02-27",
-      "time": "21:30",
-      "open": 56,
-      "state": "on_sale",
-      "url": "https://tickets.themagiciansstudy.com/event/the-magicians-study---930-pm-02-27-2027-2130/tickets/seg?e=wZd"
-    },
-    {
       "date": "2027-02-28",
       "time": "19:00",
       "open": 58,
@@ -941,20 +927,6 @@
       "open": 56,
       "state": "on_sale",
       "url": "https://tickets.themagiciansstudy.com/event/the-magicians-study---930-pm-03-12-2027-2130/tickets/seg?e=wZd"
-    },
-    {
-      "date": "2027-03-13",
-      "time": "19:00",
-      "open": 47,
-      "state": "on_sale",
-      "url": "https://tickets.themagiciansstudy.com/event/the-magicians-study---700-pm-03-13-2027-1900/tickets/seg?e=wZd"
-    },
-    {
-      "date": "2027-03-13",
-      "time": "21:30",
-      "open": 58,
-      "state": "on_sale",
-      "url": "https://tickets.themagiciansstudy.com/event/the-magicians-study---930-pm-03-13-2027-2130/tickets/seg?e=wZd"
     },
     {
       "date": "2027-03-14",
