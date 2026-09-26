@@ -1,6 +1,6 @@
 {
-  "updated_at": "2026-09-26T06:06:44.658280-07:00",
-  "tier": "near",
+  "updated_at": "2026-09-26T06:53:28.828970-07:00",
+  "tier": "full",
   "venue_timezone": "America/Los_Angeles",
   "capacity": 65,
   "performances": [
@@ -98,14 +98,14 @@
     {
       "date": "2026-10-11",
       "time": "21:30",
-      "open": 30,
+      "open": 29,
       "state": "on_sale",
       "url": "https://tickets.themagiciansstudy.com/event/the-magicians-study-10-11-2026-2130/tickets/seg?e=wZd"
     },
     {
       "date": "2026-10-15",
       "time": "19:00",
-      "open": 23,
+      "open": 21,
       "state": "on_sale",
       "url": "https://tickets.themagiciansstudy.com/event/the-magicians-study-10-15-2026-1900/tickets/seg?e=wZd"
     },
@@ -126,7 +126,7 @@
     {
       "date": "2026-10-16",
       "time": "21:30",
-      "open": 18,
+      "open": 16,
       "state": "on_sale",
       "url": "https://tickets.themagiciansstudy.com/event/the-magicians-study-10-16-2026-2130/tickets/seg?e=wZd"
     },
@@ -140,7 +140,7 @@
     {
       "date": "2026-10-17",
       "time": "21:30",
-      "open": 16,
+      "open": 14,
       "state": "on_sale",
       "url": "https://tickets.themagiciansstudy.com/event/the-magicians-study-10-17-2026-2130/tickets/seg?e=wZd"
     },
@@ -168,7 +168,7 @@
     {
       "date": "2026-10-23",
       "time": "21:30",
-      "open": 11,
+      "open": 9,
       "state": "on_sale",
       "url": "https://tickets.themagiciansstudy.com/event/the-magicians-study-10-23-2026-2130/tickets/seg?e=wZd"
     },
@@ -259,7 +259,7 @@
     {
       "date": "2026-11-05",
       "time": "19:00",
-      "open": 36,
+      "open": 34,
       "state": "on_sale",
       "url": "https://tickets.themagiciansstudy.com/event/the-magicians-study-11-05-2026-1900/tickets/seg?e=wZd"
     },
@@ -378,7 +378,7 @@
     {
       "date": "2026-11-28",
       "time": "21:30",
-      "open": 58,
+      "open": 56,
       "state": "on_sale",
       "url": "https://tickets.themagiciansstudy.com/event/the-magicians-study-11-28-2026-2130/tickets/seg?e=wZd"
     },
