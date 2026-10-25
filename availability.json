@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-25T12:38:13.713262-07:00",
+  "updated_at": "2026-10-25T15:34:10.391112-07:00",
   "tier": "near",
   "venue_timezone": "America/Los_Angeles",
   "capacity": 65,
@@ -14,7 +14,7 @@
     {
       "date": "2026-10-25",
       "time": "21:30",
-      "open": 12,
+      "open": 10,
       "state": "on_sale",
       "url": "https://tickets.themagiciansstudy.com/event/the-magicians-study-10-25-2026-2130/tickets/seg?e=wZd"
     },
