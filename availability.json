@@ -1,23 +1,9 @@
 {
-  "updated_at": "2026-11-07T18:30:03.389916-08:00",
+  "updated_at": "2026-11-08T02:24:33.575956-08:00",
   "tier": "near",
   "venue_timezone": "America/Los_Angeles",
   "capacity": 65,
   "performances": [
-    {
-      "date": "2026-11-07",
-      "time": "19:00",
-      "open": 6,
-      "state": "on_sale",
-      "url": "https://tickets.themagiciansstudy.com/event/the-magicians-study-11-07-2026-1900/tickets/seg?e=wZd"
-    },
-    {
-      "date": "2026-11-07",
-      "time": "21:30",
-      "open": 8,
-      "state": "on_sale",
-      "url": "https://tickets.themagiciansstudy.com/event/the-magicians-study-11-07-2026-2130/tickets/seg?e=wZd"
-    },
     {
       "date": "2026-11-08",
       "time": "19:00",
